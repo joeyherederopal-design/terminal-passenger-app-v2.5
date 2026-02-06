@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#1e3a8a">
+    <meta name="description" content="Brooke's Point Grand Terminal - Passenger Data Collection">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="logo.png">
+    <title>BPGT - Passenger Data</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 24px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 24px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #1e3a8a;
+        }
+
+        .logo {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 16px;
+            display: block;
+        }
+
+        h1 {
+            color: #1e3a8a;
+            font-size: 22px;
+            margin-bottom: 4px;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .section {
+            margin-bottom: 24px;
+            padding-bottom: 24px;
+            border-bottom: 2px solid #f1f5f9;
+        }
+
+        .section:last-child {
+            border-bottom: none;
+        }
+
+        .section-title {
+            color: #1e3a8a;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-icon {
+            font-size: 32px;
+        }
+
+        .scanner-section {
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .scanner-btn {
+            background: #1e3a8a;
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+            margin: 4px;
+        }
+
+        .scanner-btn:hover {
+            background: #1e40af;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(30, 58, 138, 0.4);
+        }
+
+        .scanner-btn:active {
+            transform: translateY(0);
+        }
+
+        #scanner-preview {
+            display: none;
+            width: 100%;
+            max-width: 400px;
+            margin: 16px auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        #captured-image {
+            display: none;
+            width: 100%;
+            max-width: 400px;
+            margin: 16px auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .scanner-container {
+            position: relative;
+            display: none;
+        }
+
+        .scanner-controls {
+            margin-top: 12px;
+            text-align: center;
+        }
+
+        .close-scanner-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group.hidden {
+            display: none;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        label {
+            display: block;
+            color: #475569;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px 14px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: all 0.3s;
+            background: white;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #1e3a8a;
+            box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
+        }
+
+        input[type="number"] {
+            text-align: center;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        select {
+            cursor: pointer;
+        }
+
+        .auto-filled {
+            background: #dbeafe !important;
+            border-color: #3b82f6 !important;
+        }
+
+        .passenger-grid {
+            display: grid;
+            grid-template-columns: 2fr 2fr 1.5fr;
+            gap: 12px;
+            align-items: end;
+        }
+
+        .passenger-label {
+            font-size: 48px;
+            text-align: center;
+            margin-bottom: 4px;
+        }
+
+        .total-display {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border: none;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: 700;
+            color: white;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            padding: 18px;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 24px;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .submit-btn:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .status-message {
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 16px;
+            text-align: center;
+            font-weight: 600;
+            display: none;
+        }
+
+        .status-success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 2px solid #10b981;
+        }
+
+        .status-error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 2px solid #ef4444;
+        }
+
+        @media (max-width: 640px) {
+            .form-row, .passenger-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .logo {
+                width: 100px;
+                height: 100px;
+            }
+            
+            h1 {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="logo.png" alt="BPGT Logo" class="logo">
+            <h1>Brooke's Point Grand Terminal</h1>
+            <p class="subtitle">Passenger Data Collection System</p>
+        </div>
+
+        <form id="passenger-form">
+            <!-- QR Scanner Section -->
+            <div class="section">
+                <div class="section-title">
+                    <span class="section-icon">📱</span>
+                    Vehicle Identification
+                </div>
+                <div class="scanner-section">
+                    <button type="button" class="scanner-btn" id="open-qr-scanner">
+                        📷 Scan QR Code
+                    </button>
+                    <button type="button" class="scanner-btn" id="open-camera" style="background: #3b82f6;">
+                        📸 Take Photo
+                    </button>
+                    <div class="scanner-container" id="scanner-container">
+                        <video id="scanner-preview" autoplay playsinline></video>
+                        <div class="scanner-controls">
+                            <button type="button" class="close-scanner-btn" id="close-scanner">Close Scanner</button>
+                        </div>
+                    </div>
+                    <img id="captured-image" alt="Captured plate">
+                </div>
+                <div class="form-group">
+                    <label for="plate-number">Vehicle Plate Number *</label>
+                    <input type="text" id="plate-number" required placeholder="e.g., ABC 1234" style="text-transform: uppercase;">
+                </div>
+            </div>
+
+            <!-- Trip Details -->
+            <div class="section">
+                <div class="section-title">
+                    <span class="section-icon">📋</span>
+                    Trip Details
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="trip-date">Date *</label>
+                        <input type="date" id="trip-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="trip-time">Time *</label>
+                        <input type="time" id="trip-time" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="type">Type *</label>
+                    <select id="type" required>
+                        <option value="">Select Type</option>
+                        <option value="ARRIVAL">ARRIVAL</option>
+                        <option value="DEPARTURE">DEPARTURE</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="denomination">Vehicle Type (Denomination) *</label>
+                    <select id="denomination" required>
+                        <option value="">Select Vehicle Type</option>
+                        <option value="BUS">BUS</option>
+                        <option value="SHUTTLE VAN">SHUTTLE VAN</option>
+                        <option value="TRICYCLE">TRICYCLE</option>
+                        <option value="JEEP">JEEP</option>
+                        <option value="MULTICAB">MULTICAB</option>
+                        <option value="FILCAB">FILCAB</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="transport-group">Transport Group *</label>
+                    <select id="transport-group" required disabled>
+                        <option value="">First select vehicle type</option>
+                    </select>
+                </div>
+                
+                <!-- SMART ORIGIN/DESTINATION - Only one shows based on Type -->
+                <div class="form-group hidden" id="origin-group">
+                    <label for="origin">Origin (Where did it come from?) *</label>
+                    <select id="origin">
+                        <option value="">Select Origin</option>
+                        <option value="BROOKE'S POINT">BROOKE'S POINT</option>
+                        <option value="PPC">PPC</option>
+                        <option value="ABORLAN">ABORLAN</option>
+                        <option value="NARRA">NARRA</option>
+                        <option value="S.ESPAÑOLA">S.ESPAÑOLA</option>
+                        <option value="QUEZON">QUEZON</option>
+                        <option value="BATARAZA">BATARAZA</option>
+                        <option value="RIO-TUBA">RIO-TUBA</option>
+                        <option value="BULILUYAN">BULILUYAN</option>
+                        <option value="SICUD">SICUD</option>
+                        <option value="RIZAL">RIZAL</option>
+                    </select>
+                </div>
+                
+                <div class="form-group hidden" id="destination-group">
+                    <label for="destination">Destination (Where is it going?) *</label>
+                    <select id="destination">
+                        <option value="">Select Destination</option>
+                        <option value="BROOKE'S POINT">BROOKE'S POINT</option>
+                        <option value="PPC">PPC</option>
+                        <option value="ABORLAN">ABORLAN</option>
+                        <option value="NARRA">NARRA</option>
+                        <option value="S.ESPAÑOLA">S.ESPAÑOLA</option>
+                        <option value="QUEZON">QUEZON</option>
+                        <option value="BATARAZA">BATARAZA</option>
+                        <option value="RIO-TUBA">RIO-TUBA</option>
+                        <option value="BULILUYAN">BULILUYAN</option>
+                        <option value="SICUD">SICUD</option>
+                        <option value="RIZAL">RIZAL</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Passenger Demographics -->
+            <div class="section">
+                <div class="section-title">
+                    <span class="section-icon">👥</span>
+                    Adult Passengers
+                </div>
+                <div class="passenger-grid">
+                    <div class="form-group">
+                        <div class="passenger-label">👨</div>
+                        <label for="adult-male">Male</label>
+                        <input type="number" id="adult-male" min="0" value="0" class="passenger-count">
+                    </div>
+                    <div class="form-group">
+                        <div class="passenger-label">👩</div>
+                        <label for="adult-female">Female</label>
+                        <input type="number" id="adult-female" min="0" value="0" class="passenger-count">
+                    </div>
+                    <div class="form-group">
+                        <label for="adult-total">Total</label>
+                        <input type="number" id="adult-total" readonly style="background: #f1f5f9; font-weight: 700; color: #1e3a8a;">
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">
+                    <span class="section-icon">👶</span>
+                    Children
+                </div>
+                <div class="passenger-grid">
+                    <div class="form-group">
+                        <div class="passenger-label">👦</div>
+                        <label for="child-male">Male</label>
+                        <input type="number" id="child-male" min="0" value="0" class="passenger-count">
+                    </div>
+                    <div class="form-group">
+                        <div class="passenger-label">👧</div>
+                        <label for="child-female">Female</label>
+                        <input type="number" id="child-female" min="0" value="0" class="passenger-count">
+                    </div>
+                    <div class="form-group">
+                        <label for="child-total">Total</label>
+                        <input type="number" id="child-total" readonly style="background: #f1f5f9; font-weight: 700; color: #1e3a8a;">
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">
+                    <span class="section-icon">👴</span>
+                    Senior Citizens
+                </div>
+                <div class="passenger-grid">
+                    <div class="form-group">
+                        <div class="passenger-label">👴</div>
+                        <label for="senior-male">Male</label>
+                        <input type="number" id="senior-male" min="0" value="0" class="passenger-count">
+                    </div>
+                    <div class="form-group">
+                        <div class="passenger-label">👵</div>
+                        <label for="senior-female">Female</label>
+                        <input type="number" id="senior-female" min="0" value="0" class="passenger-count">
+                    </div>
+                    <div class="form-group">
+                        <label for="senior-total">Total</label>
+                        <input type="number" id="senior-total" readonly style="background: #f1f5f9; font-weight: 700; color: #1e3a8a;">
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">
+                    <span class="section-icon">♿</span>
+                    Persons with Disability
+                </div>
+                <div class="passenger-grid">
+                    <div class="form-group">
+                        <div class="passenger-label">👨‍🦽</div>
+                        <label for="pwd-male">Male</label>
+                        <input type="number" id="pwd-male" min="0" value="0" class="passenger-count">
+                    </div>
+                    <div class="form-group">
+                        <div class="passenger-label">👩‍🦽</div>
+                        <label for="pwd-female">Female</label>
+                        <input type="number" id="pwd-female" min="0" value="0" class="passenger-count">
+                    </div>
+                    <div class="form-group">
+                        <label for="pwd-total">Total</label>
+                        <input type="number" id="pwd-total" readonly style="background: #f1f5f9; font-weight: 700; color: #1e3a8a;">
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">
+                    <span class="section-icon">🤰</span>
+                    Pregnant Passengers
+                </div>
+                <div class="form-group">
+                    <div class="passenger-label">🤰</div>
+                    <label for="pregnant">Pregnant</label>
+                    <input type="number" id="pregnant" min="0" value="0" class="passenger-count">
+                </div>
+            </div>
+
+            <!-- Total Passengers -->
+            <div class="total-display" id="total-passengers">
+                Total Passengers: 0
+            </div>
+
+            <button type="submit" class="submit-btn" id="submit-btn">
+                📤 SUBMIT DATA
+            </button>
+
+            <div class="status-message" id="status-message"></div>
+        </form>
+    </div>
+
+    <script src="vehicle-registry.js"></script>
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <script src="app.js"></script>
+</body>
+</html>

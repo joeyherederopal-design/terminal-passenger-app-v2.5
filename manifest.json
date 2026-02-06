@@ -1,0 +1,18 @@
+{
+  "name": "Brooke's Point Grand Terminal",
+  "short_name": "BPGT",
+  "description": "Brooke's Point Grand Terminal - Passenger Data Collection",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1e3a8a",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
