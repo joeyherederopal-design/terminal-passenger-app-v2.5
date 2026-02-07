@@ -1,5 +1,5 @@
 // Configuration - REPLACE WITH YOUR GOOGLE APPS SCRIPT URL
-const GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycby8xX1EdQqdD2PEHfQL45wCAPdYARfrBeD9Mfp1A8aeKxkIxy8YmnOwH6pMyAv4qkPy/exec';
+const GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbyofbUpf7b4n1UFmlxzkOJ89_bPv02V_GvhH_gO0QCM3Jf_n-udRWhklQpFeaUthOU5/exec;
 
 // Transport group mappings
 const transportGroups = {
@@ -352,4 +352,4 @@ if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('sw.js')
         .then(reg => console.log('Service Worker registered'))
         .catch(err => console.log('Service Worker registration failed'));
-}
+}Update Google Apps Script URL
